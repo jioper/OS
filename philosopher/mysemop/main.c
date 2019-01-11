@@ -14,8 +14,10 @@
 int forks[5];
 int room;
 
-// 哲学家进餐
-void eat(int i) /*i：哲学家编号，从0 到4*/
+/*
+	哲学家进餐
+*/
+void eat(int i) //哲学家吃饭
 {
 int a=0;
    int t = rand() % 5 + 1;
@@ -44,8 +46,10 @@ printf("\t\t\t\t\t");
    printf("Philosopher %d has finished eating.\n", i);
 }
 
-
-void philosopher(int i) /*i：哲学家编号，从0 到4*/
+/*
+	哲学家进屋
+*/
+void philosopher(int i) 
 {
 int a=0;
    srand((int)time(0));
@@ -53,13 +57,13 @@ int a=0;
    {
 for(a=0;a<i;a++)
 printf("\t\t\t\t\t");
-      Psem(room); //每进来一个哲学家，对room进行一次P操作。因为room初始为4,所以第五个哲学家会休眠。
+      Psem(room); //哲学家申请进屋
 
       printf("Philosopher %d entered the room.\n", i);
 
       eat(i);
 
-      Vsem(room); //哲学家进完餐。
+      Vsem(room); //哲学家出屋子
 for(a=0;a<i;a++)
 printf("\t\t\t\t\t");
       printf("Philosopher %d left the room.\n", i);
@@ -73,19 +77,15 @@ int main(void)
    char kill_cmd[100];
    int child_ids[N];
 
-   //room初始为4.
+   //只有四个哲学家可以进屋，算法1
    room = CreateSem(4);
    for (i = 0; i < N; i++)
       forks[i] = CreateSem(1);
 
-   // 创建5个筷子的信号量。
+   // 五个筷子
    for (i = 0; i < N; i++)
    {
       pid = fork();
-
-       /*
-        pid==0 说明在子进程里面。
-        */
       if (pid == 0)
       {
          philosopher(i);
@@ -96,10 +96,10 @@ int main(void)
       }
    }
 
-    /*
-     输入q即可停止杀死进程，停止程序。
-     */
-   while (getchar() != 'q');
+/*
+	输入a终止
+*/
+   while (getchar() != 'a');
    for (i = 0; i < N; ++i)
    {
           kill(child_ids[i], SIGTERM); 
